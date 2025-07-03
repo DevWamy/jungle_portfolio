@@ -6,6 +6,7 @@ import Ground from './components/Ground';
 import Lights from './components/Lights';
 import Background from './components/Background';
 import Fireflies from './components/Fireflies';
+import PlantsGroup from './components/PlantsGroup';
 import { motion } from 'framer-motion';
 import { FaSun, FaMoon } from 'react-icons/fa';
 import './index.css';
@@ -36,11 +37,6 @@ function App() {
         {mode === 'day' ? <FaSun size={18} /> : <FaMoon size={18} />}
       </motion.button>
 
-      {/* Titre */}
-      <h1 className="text-4xl font-bold text-purple-600 absolute top-4 right-4 z-10">
-        Hello Tailwind 🎉
-      </h1>
-
       {/* Canvas plein écran */}
       <Canvas
         className="absolute top-0 left-0 w-full h-full"
@@ -56,6 +52,7 @@ function App() {
         <Background mode={mode} />
         <Lights mode={mode} />
         <Ground mode={mode} />
+        <PlantsGroup /> 
         <EffectComposer>
           <Bloom
             luminanceThreshold={0.1}

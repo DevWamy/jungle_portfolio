@@ -2,7 +2,9 @@ import { useTexture } from '@react-three/drei';
 import { useRef } from 'react';
 import { RepeatWrapping } from 'three';
 
-function Ground ({ mode }) {
+const AREA_SIZE = 10; // Taille cohérente avec la scène principale
+
+function Ground({ mode }) {
   const ref = useRef();
 
   const [color, normal, roughness, ao, displacement] = useTexture([
@@ -15,7 +17,7 @@ function Ground ({ mode }) {
 
   [color, normal, roughness, ao, displacement].forEach((texture) => {
     texture.wrapS = texture.wrapT = RepeatWrapping;
-    texture.repeat.set(20, 20);
+    texture.repeat.set(AREA_SIZE, AREA_SIZE); // Ajusté pour la taille réduite
   });
 
   return (
@@ -23,18 +25,20 @@ function Ground ({ mode }) {
       ref={ref}
       rotation-x={-Math.PI / 2}
       position={[0, 0, 0]}
-      key={mode} 
-      onUpdate={self => self.geometry.setAttribute('uv2', self.geometry.attributes.uv)}
+      key={mode}
+      onUpdate={(self) =>
+        self.geometry.setAttribute('uv2', self.geometry.attributes.uv)
+      }
       receiveShadow
     >
-      <planeGeometry args={[50, 50, 128, 128]} />
+      <planeGeometry args={[AREA_SIZE, AREA_SIZE]} />
       <meshStandardMaterial
         map={color}
         normalMap={normal}
         roughnessMap={roughness}
         aoMap={ao}
         displacementMap={displacement}
-        displacementScale={0.3}  // Un peu plus de relief mais pas trop
+        displacementScale={0.3}
       />
     </mesh>
   );
