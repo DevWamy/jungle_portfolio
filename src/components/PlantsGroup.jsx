@@ -5,8 +5,8 @@ const GROUND_WIDTH = 20;     // Largeur du sol (x)
 const GROUND_LENGTH = 60;    // Longueur du sol (z)
 const PATH_WIDTH = 6;        // Largeur du chemin vide au centre
 const PADDING = 1;           // Marge pour éviter les bords
-const MIN_DISTANCE = 0.8;    // Distance minimale entre plantes
-const MAX_ATTEMPTS = 1000;   // Nombre max d'essais pour placer
+const MIN_DISTANCE = 0.6;    // Distance minimale entre plantes
+const MAX_ATTEMPTS = 10000;   // Nombre max d'essais pour placer
 
 function isValidPosition(pos, others) {
   return others.every(other => {
@@ -82,7 +82,7 @@ function PlantsGroup() {
     ...bananas.map(model => ({ model: model.scene, scale: 0.9 })),
   ];
 
-  const totalCount = 500;
+  const totalCount = 2000;
   const positions = useMemo(() => generatePositions(totalCount), [totalCount]);
 
   return (

@@ -1,7 +1,8 @@
+import React, { useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
-import { useState } from 'react';
+import { OrbitControls, Preload, useProgress } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
+import JungleLoader from './components/JungleLoader';
 import PlayController from './components/PlayController';
 import Ground from './components/Ground';
 import Lights from './components/Lights';
@@ -17,17 +18,25 @@ function App() {
   const [previousMode, setPreviousMode] = useState('day');
   const [setModeChangeTime] = useState(Date.now());
 
+  const [loading, setLoading] = useState(true);
+  const { progress, active } = useProgress();
+
+  useEffect(() => {
+    if (!active && progress === 100) {
+      setTimeout(() => setLoading(false), 500); // petit délai pour adoucir la transition
+    }
+  }, [active, progress]);
+
   return (
     <div className={`w-screen h-screen overflow-hidden relative ${mode === 'night' ? 'dark' : ''}`}>
       {/* Bouton toggle jour/nuit */}
       <motion.button
         onClick={() => {
-    const newMode = mode === 'day' ? 'night' : 'day'; // ✅ ici on définit newMode d'abord
-    setPreviousMode(mode);                            // on garde l'ancien mode
-    setMode(newMode);                                 // on passe au nouveau
-    setModeChangeTime(Date.now());                    // on mémorise quand le changement a eu lieu
+          const newMode = mode === 'day' ? 'night' : 'day';
+          setPreviousMode(mode);
+          setMode(newMode);
+          setModeChangeTime(Date.now());
         }}
-
         className={`
           absolute top-4 left-4 z-20 
           w-10 h-10 
@@ -49,6 +58,9 @@ function App() {
 
       <div id="click-zone" className="absolute inset-0 z-0"></div>
 
+      {/* ✅ Loader jungle */}
+      {loading && <JungleLoader progress={progress} />}
+
       {/* Canvas 3D */}
       <Canvas
         className="absolute top-0 left-0 w-full h-full"
@@ -67,8 +79,6 @@ function App() {
         <Lights mode={mode} previousMode={previousMode} />
         <Ground mode={mode} />
         <Fireflies mode={mode} />
-
-        {/* Plantes sur les côtés uniquement */}
         <PlantsGroup side="both" />
 
         <EffectComposer>
@@ -78,10 +88,12 @@ function App() {
             intensity={0.5}
           />
         </EffectComposer>
+
+        {/* ✅ Préchargement de tous les assets */}
+        <Preload all />
       </Canvas>
     </div>
   );
 }
 
 export default App;
-
