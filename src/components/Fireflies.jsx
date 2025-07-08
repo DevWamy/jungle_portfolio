@@ -2,128 +2,81 @@ import React, { useMemo, useRef } from 'react';
 import * as THREE from 'three';
 import { useFrame } from '@react-three/fiber';
 
-function Fireflies({ mode, count = 20 }) {
+const GROUND_WIDTH = 20;
+const GROUND_LENGTH = 60;
+
+function Fireflies({ mode, count = 60 }) {
   const groupRef = useRef();
 
   const fireflies = useMemo(() => {
     const data = [];
     for (let i = 0; i < count; i++) {
       const position = new THREE.Vector3(
-        (Math.random() - 0.5) * 10,
-        Math.random() * 1.7 + 0.8,
-        (Math.random() - 0.5) * 10
+        (Math.random() - 0.5) * GROUND_WIDTH,
+        1.2 + Math.random() * 2.3,
+        -GROUND_LENGTH + Math.random() * GROUND_LENGTH
       );
       const velocity = new THREE.Vector3(
-        (Math.random() - 0.5) * 0.01,
-        (Math.random() - 0.5) * 0.01,
-        (Math.random() - 0.5) * 0.01
+        (Math.random() - 0.5) * 0.03,
+        (Math.random() - 0.5) * 0.03,
+        (Math.random() - 0.5) * 0.03
       );
       const color = new THREE.Color().setHSL(Math.random(), 0.7, 0.6);
-
-      data.push({
-        position,
-        velocity,
-        color,
-        meshRef: React.createRef(),
-        lightRef: React.createRef(),
-        seed: Math.random() * Math.PI * 2, // pour clignotement unique
-      });
+      data.push({ position, velocity, color, ref: React.createRef(), seed: Math.random() * Math.PI * 2 });
     }
     return data;
   }, [count]);
 
   useFrame(() => {
-  const t = performance.now() / 1000;
+    const t = performance.now() / 1000;
 
-  fireflies.forEach((fly) => {
-    // Supprimer le lerp inutile
+    fireflies.forEach((fly) => {
+      fly.position.add(fly.velocity.clone().multiplyScalar(0.8));
 
-    // Mouvement avec facteur de ralentissement
-    fly.position.add(fly.velocity.clone().multiplyScalar(0.4));
+      if (fly.position.x > GROUND_WIDTH / 2 || fly.position.x < -GROUND_WIDTH / 2)
+        fly.velocity.x *= -1;
+      if (fly.position.y > 4 || fly.position.y < 1.1)
+        fly.velocity.y *= -1;
+      if (fly.position.z > 0 || fly.position.z < -GROUND_LENGTH)
+        fly.velocity.z *= -1;
 
-    // Rebonds Y
-    if (fly.position.y > 2.6) {
-      fly.position.y = 2.6;
-      fly.velocity.y *= -0.9;
-    } else if (fly.position.y < 0.3) {
-      fly.position.y = 0.3;
-      fly.velocity.y *= -0.9;
-    }
+      if (fly.ref.current) {
+        fly.ref.current.position.copy(fly.position);
 
-    // Rebonds X
-    if (fly.position.x > 5) {
-      fly.position.x = 5;
-      fly.velocity.x *= -0.9;
-    } else if (fly.position.x < -5) {
-      fly.position.x = -5;
-      fly.velocity.x *= -0.9;
-    }
+        const flicker = 1.5 + Math.sin(t * 2 + fly.seed);
+        const intensity = mode === 'night' ? flicker : 0;
+        const opacity = mode === 'night' ? 1 : 0;
 
-    // Rebonds Z
-    if (fly.position.z > 5) {
-      fly.position.z = 5;
-      fly.velocity.z *= -0.9;
-    } else if (fly.position.z < -5) {
-      fly.position.z = -5;
-      fly.velocity.z *= -0.9;
-    }
-
-    // Réveil si vitesse trop faible
-    ['x', 'y', 'z'].forEach((axis) => {
-      if (Math.abs(fly.velocity[axis]) < 0.00001) {
-        fly.velocity[axis] = (Math.random() - 0.5) * 0.0001;
+        fly.ref.current.children[0].material.emissiveIntensity = intensity;
+        fly.ref.current.children[0].material.opacity = opacity;
+        fly.ref.current.children[1].intensity = intensity;
       }
     });
-
-    // MAJ positions
-    if (fly.meshRef.current) {
-      fly.meshRef.current.position.copy(fly.position);
-    }
-    if (fly.lightRef.current) {
-      fly.lightRef.current.position.copy(fly.position);
-
-      // Clignotement doux
-      const flicker = 1.5 + Math.sin(t * 2 + fly.seed) * 1; 
-      fly.lightRef.current.intensity = flicker;
-    }
   });
-});
 
   return (
     <group ref={groupRef}>
       {fireflies.map((fly, i) => (
-        <React.Fragment key={i}>
-          {/* Luciole visible */}
-          <mesh
-            ref={fly.meshRef}
-            position={fly.position}
-            scale={mode === 'night' ? 0.02 : 0.01}
-          >
+        <group key={i} ref={fly.ref} position={fly.position}>
+          <mesh scale={0.025}>
             <sphereGeometry args={[1, 16, 16]} />
             <meshStandardMaterial
-              color={mode === 'night' ? 'black' : fly.color}
-              emissive={mode === 'night' ? fly.color : 'black'}
-              emissiveIntensity={mode === 'night' ? 2 : 0}
+              color="black"
+              emissive={fly.color}
+              emissiveIntensity={1}
               transparent
-              opacity={mode === 'night' ? 1 : 0.25}
+              opacity={0}
               toneMapped={false}
             />
           </mesh>
-
-          {/* Lumière (que la nuit) */}
-          {mode === 'night' && (
-            <pointLight
-              ref={fly.lightRef}
-              position={fly.position}
-              intensity={2.5} 
-              distance={0.15} 
-              decay={3} 
-              color={fly.color}
-              toneMapped={false}
-              castShadow={false}
-            />
-          )}
-        </React.Fragment>
+          <pointLight
+            intensity={0}
+            distance={0.15}
+            decay={3}
+            color={fly.color}
+            castShadow={false}
+          />
+        </group>
       ))}
     </group>
   );

@@ -2,6 +2,7 @@ import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { useState } from 'react';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
+import PlayController from './components/PlayController';
 import Ground from './components/Ground';
 import Lights from './components/Lights';
 import Background from './components/Background';
@@ -13,14 +14,22 @@ import './index.css';
 
 function App() {
   const [mode, setMode] = useState('day');
+  const [previousMode, setPreviousMode] = useState('day');
+  const [setModeChangeTime] = useState(Date.now());
 
   return (
     <div className={`w-screen h-screen overflow-hidden relative ${mode === 'night' ? 'dark' : ''}`}>
-      {/* Bouton toggle */}
+      {/* Bouton toggle jour/nuit */}
       <motion.button
-        onClick={() => setMode(mode === 'day' ? 'night' : 'day')}
+        onClick={() => {
+    const newMode = mode === 'day' ? 'night' : 'day'; // ✅ ici on définit newMode d'abord
+    setPreviousMode(mode);                            // on garde l'ancien mode
+    setMode(newMode);                                 // on passe au nouveau
+    setModeChangeTime(Date.now());                    // on mémorise quand le changement a eu lieu
+        }}
+
         className={`
-          absolute top-4 left-4 z-10 
+          absolute top-4 left-4 z-20 
           w-10 h-10 
           rounded-full 
           flex items-center justify-center 
@@ -33,26 +42,35 @@ function App() {
         animate={{ rotate: mode === 'day' ? 0 : 180 }}
         transition={{ duration: 0.6, ease: 'easeInOut' }}
         aria-label="Toggle mode"
+        style={{ pointerEvents: 'auto' }}
       >
         {mode === 'day' ? <FaSun size={18} /> : <FaMoon size={18} />}
       </motion.button>
 
-      {/* Canvas plein écran */}
+      <div id="click-zone" className="absolute inset-0 z-0"></div>
+
+      {/* Canvas 3D */}
       <Canvas
         className="absolute top-0 left-0 w-full h-full"
-        camera={{ position: [0, 12, 20], fov: 60, near: 0.1, far: 100 }}
+        camera={{ position: [0, 5, 20], fov: 60 }}
+        gl={{ antialias: true }}
       >
         <OrbitControls
-          target={[0, 1, 0]}
-          maxPolarAngle={Math.PI / 2}
-          minPolarAngle={0.1}
+          enablePan={false}
+          maxPolarAngle={Math.PI / 2.4}
           minDistance={10}
-          maxDistance={30}
+          maxDistance={35}
+          target={[0, 0, 0]}
         />
-        <Background mode={mode} />
-        <Lights mode={mode} />
+
+        <Background mode={mode} previousMode={previousMode} />
+        <Lights mode={mode} previousMode={previousMode} />
         <Ground mode={mode} />
-        <PlantsGroup /> 
+        <Fireflies mode={mode} />
+
+        {/* Plantes sur les côtés uniquement */}
+        <PlantsGroup side="both" />
+
         <EffectComposer>
           <Bloom
             luminanceThreshold={0.1}
@@ -60,10 +78,10 @@ function App() {
             intensity={0.5}
           />
         </EffectComposer>
-        <Fireflies mode={mode} />
       </Canvas>
     </div>
   );
 }
 
 export default App;
+

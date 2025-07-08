@@ -19,6 +19,7 @@
     "@react-three/postprocessing": "^3.0.4",
     "drei": "^2.2.21",
     "framer-motion": "^12.18.1",
+    "nipplejs": "^0.10.2",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-icons": "^5.5.0",
