@@ -1,13 +1,14 @@
 import React, { useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 
-const GROUND_WIDTH = 20;     // Largeur du sol (x)
-const GROUND_LENGTH = 60;    // Longueur du sol (z)
-const PATH_WIDTH = 6;        // Largeur du chemin vide au centre
-const PADDING = 1;           // Marge pour éviter les bords
-const MIN_DISTANCE = 0.6;    // Distance minimale entre plantes
-const MAX_ATTEMPTS = 10000;   // Nombre max d'essais pour placer
+const GROUND_WIDTH = 20;
+const GROUND_LENGTH = 60;
+const PATH_WIDTH = 6;
+const PADDING = 1;
+const MIN_DISTANCE = 0.6;
+const MAX_ATTEMPTS = 10000;
 
+// Vérifie si une nouvelle position ne chevauche pas les autres
 function isValidPosition(pos, others) {
   return others.every(other => {
     const dx = pos[0] - other[0];
@@ -16,21 +17,24 @@ function isValidPosition(pos, others) {
   });
 }
 
+// Génère des positions aléatoires sur les côtés du chemin, sans superposition
 function generatePositions(count) {
   const positions = [];
   let attempts = 0;
 
   const halfWidth = GROUND_WIDTH / 2;
 
+  // Zones gauche et droite du chemin
   const leftMinX = -halfWidth + PADDING;
   const leftMaxX = -PATH_WIDTH / 2 - PADDING;
 
   const rightMinX = PATH_WIDTH / 2 + PADDING;
   const rightMaxX = halfWidth - PADDING;
 
-  const minZ = -GROUND_LENGTH; // car le sol est placé à z = -30
+  const minZ = -GROUND_LENGTH;
   const maxZ = 0;
 
+  // On essaie de placer des plantes jusqu'à atteindre le nombre voulu
   while (positions.length < count && attempts < MAX_ATTEMPTS) {
     const side = Math.random() < 0.5 ? 'left' : 'right';
     const x = side === 'left'
@@ -51,6 +55,7 @@ function generatePositions(count) {
 }
 
 function PlantsGroup() {
+  // Chargement de tous les modèles GLTF pour chaque catégorie de plante
   const palms = [
     useGLTF('assets/models/plants/palms/palm.glb'),
     useGLTF('assets/models/plants/palms/palm_2.glb'),
@@ -75,6 +80,7 @@ function PlantsGroup() {
     useGLTF('assets/models/plants/bananas/banana_2.glb'),
   ];
 
+  // Réunit tous les modèles avec leur échelle respective
   const allPlants = [
     ...palms.map(model => ({ model: model.scene, scale: 1 })),
     ...monsteras.map(model => ({ model: model.scene, scale: 0.8 })),
@@ -82,16 +88,19 @@ function PlantsGroup() {
     ...bananas.map(model => ({ model: model.scene, scale: 0.9 })),
   ];
 
+  // Génère toutes les positions pour les plantes une seule fois
   const totalCount = 2000;
   const positions = useMemo(() => generatePositions(totalCount), [totalCount]);
 
   return (
     <group>
       {positions.map((pos, i) => {
+        // Sélectionne cycliquement un modèle à partir de la liste
         const plant = allPlants[i % allPlants.length];
         return (
           <primitive
             key={i}
+            // Clone du modèle pour ne pas affecter l'original (ex: transformations)
             object={plant.model.clone()}
             position={pos}
             scale={[plant.scale, plant.scale, plant.scale]}
@@ -106,5 +115,3 @@ function PlantsGroup() {
 }
 
 export default PlantsGroup;
-
-

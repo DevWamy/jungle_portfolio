@@ -3,26 +3,30 @@ import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import React from 'react';
 
 export default function JungleLoader() {
-  const { progress } = useProgress();
-  const motionProgress = useMotionValue(0);
-  const smoothProgress = useSpring(motionProgress, { stiffness: 100, damping: 20 });
+  const { progress } = useProgress(); // Progression de chargement des assets
+  const motionProgress = useMotionValue(0); // Valeur animée brute
+  const smoothProgress = useSpring(motionProgress, { stiffness: 100, damping: 20 }); // Animation avec effet ressort pour lisser
 
+  // Met à jour la valeur animée à chaque changement de progression réelle
   React.useEffect(() => {
     motionProgress.set(progress);
-  }, [progress, motionProgress]); // <-- motionProgress ajouté ici
+  }, [progress, motionProgress]);
 
+  // Conversion de la progression en pourcentage animé pour la largeur de la barre
   const width = useTransform(smoothProgress, p => `${Math.min(p, 100)}%`);
+  // Affichage textuel du pourcentage
   const displayedProgress = useTransform(smoothProgress, p => Math.floor(Math.min(p, 100)));
 
   return (
     <div className="fixed inset-0 bg-[#0c1a0d] z-50 flex flex-col items-center justify-center text-green-100 select-none">
-      {/* Masque tribal stylisé */}
+      {/* Masque tribal stylisé avec une rotation animée infinie */}
       <motion.div
         className="mb-8 text-green-400 drop-shadow-[0_0_10px_rgba(72,187,120,0.9)]"
         animate={{ rotate: [0, 10, 0, -10, 0] }}
         transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
         aria-hidden="true"
       >
+        {/* SVG d’un masque stylisé pour l’ambiance jungle */}
         <svg
           width="100"
           height="120"
@@ -57,16 +61,16 @@ export default function JungleLoader() {
         <motion.span>{displayedProgress}</motion.span>%
       </motion.div>
 
-      {/* Barre de progression synchronisée */}
+      {/* Barre de progression visuelle */}
       <div className="w-2/3 h-2 bg-green-900 rounded-full overflow-hidden">
         <motion.div
           className="h-full bg-gradient-to-r from-green-500 to-lime-300"
-          style={{ width }}
+          style={{ width }} // largeur animée selon la progression
           initial={{ width: '0%' }}
         />
       </div>
 
-      {/* Message version mobile */}
+      {/* Message pour prévenir l’utilisateur mobile */}
       <motion.div
         className="mt-6 text-sm text-green-400 font-mono select-text"
         initial={{ opacity: 0, y: 5 }}
@@ -78,5 +82,3 @@ export default function JungleLoader() {
     </div>
   );
 }
-
-
