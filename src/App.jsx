@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, Preload, useProgress } from '@react-three/drei';
+import {  Preload, useProgress } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
+import FreeCameraController from './components/FreeCameraController';
 import JungleLoader from './components/JungleLoader';
 import PlayController from './components/PlayController';
 import Ground from './components/Ground';
@@ -9,6 +10,7 @@ import Lights from './components/Lights';
 import Background from './components/Background';
 import Fireflies from './components/Fireflies';
 import PlantsGroup from './components/PlantsGroup';
+import DirectionIndicator from './components/DirectionIndicator';
 import { motion } from 'framer-motion';
 import { FaSun, FaMoon } from 'react-icons/fa';
 import './index.css';
@@ -95,15 +97,8 @@ function App() {
         camera={{ position: [0, 5, 20], fov: 60 }}  // Position et champ de vue caméra
         gl={{ antialias: true }}                      // Anticrénelage activé
       >
-        {/* Contrôles orbitaux pour naviguer dans la scène 3D */}
-        <OrbitControls
-          enablePan={false}                           // Pas de déplacement latéral
-          maxPolarAngle={Math.PI / 2.4}               // Limite la rotation verticale
-          minDistance={10}                            // Distance minimale caméra
-          maxDistance={35}                            // Distance maximale caméra
-          target={[0, 0, 0]}                          // Point visé
-        />
-
+        <FreeCameraController />
+    
         {/* Composants 3D qui dépendent du mode */}
         <Background mode={mode} previousMode={previousMode} />
         <Lights mode={mode} previousMode={previousMode} />
@@ -124,6 +119,7 @@ function App() {
         {/* Préchargement de tous les assets pour éviter les à-coups */}
         <Preload all />
       </Canvas>
+      <DirectionIndicator />
     </div>
   );
 }

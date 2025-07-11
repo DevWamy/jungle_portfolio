@@ -6,10 +6,15 @@ export default function JungleLoader() {
   const { progress } = useProgress(); // Progression de chargement des assets
   const motionProgress = useMotionValue(0); // Valeur animée brute
   const smoothProgress = useSpring(motionProgress, { stiffness: 100, damping: 20 }); // Animation avec effet ressort pour lisser
+  const maxProgress = React.useRef(0); //Empêche le recul visuel
 
   // Met à jour la valeur animée à chaque changement de progression réelle
   React.useEffect(() => {
+    // motionProgress.set(progress);
+    if (progress > maxProgress.current) {
+    maxProgress.current = progress;
     motionProgress.set(progress);
+  } // Empêche le recul visuel
   }, [progress, motionProgress]);
 
   // Conversion de la progression en pourcentage animé pour la largeur de la barre
