@@ -62,7 +62,7 @@ export default function JungleLoader() {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1 }}
       >
-        🌿 Chargement de la jungle...{' '}
+        🌿 Chargement ...{' '}
         <motion.span>{displayedProgress}</motion.span>%
       </motion.div>
 

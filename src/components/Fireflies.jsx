@@ -5,7 +5,7 @@ import { useFrame } from '@react-three/fiber';
 const GROUND_WIDTH = 20;
 const GROUND_LENGTH = 60;
 
-function Fireflies({ mode, count = 80 }) {
+function Fireflies({ mode, count = 100 }) {
   const groupRef = useRef();
   const fadeRef = useRef(0);
 
@@ -87,8 +87,8 @@ function Fireflies({ mode, count = 80 }) {
       {fireflies.map((fly, i) => (
         <group key={i} ref={fly.ref} position={fly.position}>
           <mesh
-            scale={0.025}
-            geometry={new THREE.SphereGeometry(1, 12, 12)}
+            scale={0.01}
+            geometry={new THREE.SphereGeometry(1, 6, 6)}
             material={
               new THREE.MeshStandardMaterial({
                 color: fly.color,

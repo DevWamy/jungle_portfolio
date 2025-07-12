@@ -3,8 +3,8 @@ import { Canvas } from '@react-three/fiber';
 import {  Preload, useProgress } from '@react-three/drei';
 import { EffectComposer, Bloom } from '@react-three/postprocessing';
 import FreeCameraController from './components/FreeCameraController';
+import PointerLockHint from './components/PointerLockHint';
 import JungleLoader from './components/JungleLoader';
-import PlayController from './components/PlayController';
 import Ground from './components/Ground';
 import Lights from './components/Lights';
 import Background from './components/Background';
@@ -120,6 +120,7 @@ function App() {
         <Preload all />
       </Canvas>
       <DirectionIndicator />
+      {!loading && <PointerLockHint />}
     </div>
   );
 }
