@@ -10,6 +10,8 @@ import Lights from './components/Lights';
 import Background from './components/Background';
 import Fireflies from './components/Fireflies';
 import PlantsGroup from './components/PlantsGroup';
+import JungleBackdrop from './components/JungleBackdrop';
+// import Waterfall from './components/Waterfall';
 import DirectionIndicator from './components/DirectionIndicator';
 import { motion } from 'framer-motion';
 import { FaSun, FaMoon } from 'react-icons/fa';
@@ -106,7 +108,8 @@ function App() {
         {/* Affiche les lucioles seulement si showFireflies est vrai */}
         {showFireflies && <Fireflies mode={mode} />}
         <PlantsGroup side="both" />
-
+        <JungleBackdrop />        {/* Jungle fantôme tout autour */}
+        {/* <Waterfall /> */}
         {/* Effets postprocessing (ex: bloom pour lueur douce) */}
         <EffectComposer>
           <Bloom
@@ -120,6 +123,7 @@ function App() {
         <Preload all />
       </Canvas>
       <DirectionIndicator />
+
       {!loading && <PointerLockHint />}
     </div>
   );

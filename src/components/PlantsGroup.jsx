@@ -3,7 +3,7 @@ import { useGLTF } from '@react-three/drei';
 
 const GROUND_WIDTH = 20;
 const GROUND_LENGTH = 60;
-const PATH_WIDTH = 6;
+const PATH_WIDTH = 7;
 const PADDING = 1;
 const MIN_DISTANCE = 0.6;
 const MAX_ATTEMPTS = 10000;
@@ -24,7 +24,7 @@ function generatePositions(count) {
 
   const halfWidth = GROUND_WIDTH / 2;
 
-  // Zones gauche et droite du chemin
+  // Zones gauche et droite du chemin (avec PADDING pour pas coller au chemin)
   const leftMinX = -halfWidth + PADDING;
   const leftMaxX = -PATH_WIDTH / 2 - PADDING;
 
@@ -37,13 +37,18 @@ function generatePositions(count) {
   // On essaie de placer des plantes jusqu'à atteindre le nombre voulu
   while (positions.length < count && attempts < MAX_ATTEMPTS) {
     const side = Math.random() < 0.5 ? 'left' : 'right';
+
+    // Génère X dans la bonne zone selon le côté choisi
     const x = side === 'left'
       ? Math.random() * (leftMaxX - leftMinX) + leftMinX
       : Math.random() * (rightMaxX - rightMinX) + rightMinX;
 
+    // Z aléatoire dans la zone définie
     const z = Math.random() * (maxZ - minZ) + minZ;
 
     const pos = [x, 0, z];
+
+    // Ajoute si pas trop proche d'autres plantes
     if (isValidPosition(pos, positions)) {
       positions.push(pos);
     }
@@ -55,7 +60,7 @@ function generatePositions(count) {
 }
 
 function PlantsGroup() {
-  // Chargement de tous les modèles GLTF pour chaque catégorie de plante
+  // Chargement des modèles GLTF pour chaque catégorie de plante
   const palms = [
     useGLTF('assets/models/plants/palms/palm.glb'),
     useGLTF('assets/models/plants/palms/palm_2.glb'),
@@ -88,22 +93,34 @@ function PlantsGroup() {
     ...bananas.map(model => ({ model: model.scene, scale: 0.9 })),
   ];
 
-  // Génère toutes les positions pour les plantes une seule fois
   const totalCount = 2000;
+
+  // Génère une fois les positions (stables)
   const positions = useMemo(() => generatePositions(totalCount), [totalCount]);
+
+  // Génère une fois la variation de taille (stables)
+  const sizes = useMemo(() => {
+    const arr = [];
+    for (let i = 0; i < totalCount; i++) {
+      // Taille entre 70% et 130% de la taille de base
+      arr.push(0.7 + Math.random() * 0.6);
+    }
+    return arr;
+  }, [totalCount]);
 
   return (
     <group>
       {positions.map((pos, i) => {
-        // Sélectionne cycliquement un modèle à partir de la liste
         const plant = allPlants[i % allPlants.length];
+        const sizeVariation = sizes[i];
+        const scale = plant.scale * sizeVariation; // taille variable mais stable
+
         return (
           <primitive
             key={i}
-            // Clone du modèle pour ne pas affecter l'original (ex: transformations)
             object={plant.model.clone()}
             position={pos}
-            scale={[plant.scale, plant.scale, plant.scale]}
+            scale={[scale, scale, scale]}  // applique la taille variable stable
             rotation={[0, 0, 0]}
             castShadow
             receiveShadow
@@ -115,3 +132,4 @@ function PlantsGroup() {
 }
 
 export default PlantsGroup;
+
