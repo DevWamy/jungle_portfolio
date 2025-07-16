@@ -11,7 +11,7 @@ import Background from './components/Background';
 import Fireflies from './components/Fireflies';
 import PlantsGroup from './components/PlantsGroup';
 import JungleBackdrop from './components/JungleBackdrop';
-// import Waterfall from './components/Waterfall';
+import Waterfall from './components/Waterfall';
 import DirectionIndicator from './components/DirectionIndicator';
 import { motion } from 'framer-motion';
 import { FaSun, FaMoon } from 'react-icons/fa';
@@ -105,11 +105,13 @@ function App() {
         <Background mode={mode} previousMode={previousMode} />
         <Lights mode={mode} previousMode={previousMode} />
         <Ground mode={mode} />
+        <Waterfall onClick={() => console.log("Cascade cliquée !")} />
         {/* Affiche les lucioles seulement si showFireflies est vrai */}
         {showFireflies && <Fireflies mode={mode} />}
         <PlantsGroup side="both" />
         <JungleBackdrop />        {/* Jungle fantôme tout autour */}
-        {/* <Waterfall /> */}
+        
+
         {/* Effets postprocessing (ex: bloom pour lueur douce) */}
         <EffectComposer>
           <Bloom
@@ -118,13 +120,14 @@ function App() {
             intensity={0.5}
           />
         </EffectComposer>
-
         {/* Préchargement de tous les assets pour éviter les à-coups */}
         <Preload all />
       </Canvas>
       <DirectionIndicator />
-
+      {/* flèche d'indication */}
+     
       {!loading && <PointerLockHint />}
+    
     </div>
   );
 }

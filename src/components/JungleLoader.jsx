@@ -2,7 +2,7 @@ import { useProgress } from '@react-three/drei';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import React from 'react';
 
-export default function JungleLoader() {
+ function JungleLoader() {
   const { progress } = useProgress(); // Progression de chargement des assets
   const motionProgress = useMotionValue(0); // Valeur animée brute
   const smoothProgress = useSpring(motionProgress, { stiffness: 100, damping: 20 }); // Animation avec effet ressort pour lisser
@@ -87,3 +87,5 @@ export default function JungleLoader() {
     </div>
   );
 }
+
+export default JungleLoader;

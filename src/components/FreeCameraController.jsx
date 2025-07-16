@@ -82,7 +82,7 @@ function FreeCameraController() {
 
     // 🔧 Nouvelle limite adaptée au sol : X reste [-10, 10], Z passe de [0, -60]
     const limitX = 10;
-    const minZ = -60;
+    const minZ = -53;
     const maxZ = 0;
     cameraHolder.current.position.x = Math.max(-limitX, Math.min(limitX, cameraHolder.current.position.x));
     cameraHolder.current.position.z = Math.max(minZ, Math.min(maxZ, cameraHolder.current.position.z));

@@ -13,7 +13,6 @@
     "dev:all": "concurrently \"npm run build:css\" \"npm run dev\""
   },
   "dependencies": {
-    "@react-three/cannon": "^6.6.0",
     "@react-three/drei": "^10.3.0",
     "@react-three/fiber": "^9.1.2",
     "@react-three/postprocessing": "^3.0.4",

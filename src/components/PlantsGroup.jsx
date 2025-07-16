@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 
 const GROUND_WIDTH = 20;
-const GROUND_LENGTH = 60;
+const GROUND_LENGTH = 55;
 const PATH_WIDTH = 7;
 const PADDING = 1;
 const MIN_DISTANCE = 0.6;
@@ -93,7 +93,7 @@ function PlantsGroup() {
     ...bananas.map(model => ({ model: model.scene, scale: 0.9 })),
   ];
 
-  const totalCount = 2000;
+  const totalCount = 800;
 
   // Génère une fois les positions (stables)
   const positions = useMemo(() => generatePositions(totalCount), [totalCount]);
