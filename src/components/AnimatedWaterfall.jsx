@@ -97,7 +97,7 @@ function AnimatedWaterfall() {
       </mesh>
 
        {/* Rochers en bas de la cascade */}
-      <Rocks position={[0, -12.8, 0.1]} scale={0.015} />
+      <Rocks position={[2, -12.8, 0.1]} scale={0.015} />
 
     </group>
   );

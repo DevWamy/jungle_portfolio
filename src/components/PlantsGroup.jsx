@@ -1,5 +1,8 @@
+
+
 import React, { useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
+import * as THREE from 'three';
 
 const GROUND_WIDTH = 20;
 const GROUND_LENGTH = 55;
@@ -8,7 +11,6 @@ const PADDING = 1;
 const MIN_DISTANCE = 0.6;
 const MAX_ATTEMPTS = 10000;
 
-// Vérifie si une nouvelle position ne chevauche pas les autres
 function isValidPosition(pos, others) {
   return others.every(other => {
     const dx = pos[0] - other[0];
@@ -17,38 +19,26 @@ function isValidPosition(pos, others) {
   });
 }
 
-// Génère des positions aléatoires sur les côtés du chemin, sans superposition
 function generatePositions(count) {
   const positions = [];
   let attempts = 0;
 
   const halfWidth = GROUND_WIDTH / 2;
-
-  // Zones gauche et droite du chemin (avec PADDING pour pas coller au chemin)
   const leftMinX = -halfWidth + PADDING;
   const leftMaxX = -PATH_WIDTH / 2 - PADDING;
-
   const rightMinX = PATH_WIDTH / 2 + PADDING;
   const rightMaxX = halfWidth - PADDING;
-
   const minZ = -GROUND_LENGTH;
   const maxZ = 0;
 
-  // On essaie de placer des plantes jusqu'à atteindre le nombre voulu
   while (positions.length < count && attempts < MAX_ATTEMPTS) {
     const side = Math.random() < 0.5 ? 'left' : 'right';
-
-    // Génère X dans la bonne zone selon le côté choisi
     const x = side === 'left'
       ? Math.random() * (leftMaxX - leftMinX) + leftMinX
       : Math.random() * (rightMaxX - rightMinX) + rightMinX;
-
-    // Z aléatoire dans la zone définie
     const z = Math.random() * (maxZ - minZ) + minZ;
-
     const pos = [x, 0, z];
 
-    // Ajoute si pas trop proche d'autres plantes
     if (isValidPosition(pos, positions)) {
       positions.push(pos);
     }
@@ -59,8 +49,22 @@ function generatePositions(count) {
   return positions;
 }
 
+// 🎨 Couleurs jungle douces
+const emissiveColors = {
+   monstera: '#88CCFF', // bleu ciel doux
+  palm: '#FFE577',     // jaune pastel lumineux
+  fern: '#FF6BB5',     // rose fuschia
+  banana: '#A5FF99',   // vert menthe clair
+};
+
+const links = {
+  monstera: 'https://boat-particles.vercel.app/',
+  palm: 'https://sliced-gear.vercel.app/',
+  fern: 'https://wobbly-sphere-lilac.vercel.app/',
+  banana: 'https://animated-galaxy-roan.vercel.app/',
+};
+
 function PlantsGroup() {
-  // Chargement des modèles GLTF pour chaque catégorie de plante
   const palms = [
     useGLTF('assets/models/plants/palms/palm.glb'),
     useGLTF('assets/models/plants/palms/palm_2.glb'),
@@ -85,46 +89,47 @@ function PlantsGroup() {
     useGLTF('assets/models/plants/bananas/banana_2.glb'),
   ];
 
-  // Réunit tous les modèles avec leur échelle respective
   const allPlants = [
-    ...palms.map(model => ({ model: model.scene, scale: 1 })),
-    ...monsteras.map(model => ({ model: model.scene, scale: 0.8 })),
-    ...ferns.map(model => ({ model: model.scene, scale: 0.6 })),
-    ...bananas.map(model => ({ model: model.scene, scale: 0.9 })),
+    ...palms.map(model => ({ model: model.scene.clone(), scale: 1, type: 'palm' })),
+    ...monsteras.map(model => ({ model: model.scene.clone(), scale: 0.8, type: 'monstera' })),
+    ...ferns.map(model => ({ model: model.scene.clone(), scale: 0.6, type: 'fern' })),
+    ...bananas.map(model => ({ model: model.scene.clone(), scale: 0.9, type: 'banana' })),
   ];
 
   const totalCount = 800;
-
-  // Génère une fois les positions (stables)
-  const positions = useMemo(() => generatePositions(totalCount), [totalCount]);
-
-  // Génère une fois la variation de taille (stables)
-  const sizes = useMemo(() => {
-    const arr = [];
-    for (let i = 0; i < totalCount; i++) {
-      // Taille entre 70% et 130% de la taille de base
-      arr.push(0.7 + Math.random() * 0.6);
-    }
-    return arr;
-  }, [totalCount]);
+  const positions = useMemo(() => generatePositions(totalCount), []);
+  const sizes = useMemo(() => Array.from({ length: totalCount }, () => 0.7 + Math.random() * 0.6), []);
 
   return (
     <group>
       {positions.map((pos, i) => {
-        const plant = allPlants[i % allPlants.length];
-        const sizeVariation = sizes[i];
-        const scale = plant.scale * sizeVariation; // taille variable mais stable
+        const { model, scale, type } = allPlants[i % allPlants.length];
+        const finalScale = scale * sizes[i];
+        const clone = model.clone(true);
 
         return (
-          <primitive
+          <group
             key={i}
-            object={plant.model.clone()}
             position={pos}
-            scale={[scale, scale, scale]}  // applique la taille variable stable
-            rotation={[0, 0, 0]}
-            castShadow
-            receiveShadow
-          />
+            scale={[finalScale, finalScale, finalScale]}
+            onPointerOver={(e) => {
+              e.stopPropagation();
+              e.object.material?.emissive?.set(emissiveColors[type]);
+              document.body.style.cursor = 'pointer';
+            }}
+            onPointerOut={(e) => {
+              e.stopPropagation();
+              e.object.material?.emissive?.set('#000000');
+              document.body.style.cursor = 'default';
+            }}
+            onClick={(e) => {
+              e.stopPropagation();
+              const link = links[type];
+              if (link) window.open(link, '_blank');
+            }}
+          >
+            <primitive object={clone} castShadow receiveShadow />
+          </group>
         );
       })}
     </group>
@@ -132,4 +137,3 @@ function PlantsGroup() {
 }
 
 export default PlantsGroup;
-
