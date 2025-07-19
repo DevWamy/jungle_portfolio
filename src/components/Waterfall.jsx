@@ -4,7 +4,7 @@ import { RepeatWrapping } from 'three';
 import AnimatedWaterfall from './AnimatedWaterfall'; 
 
 function Waterfall({ onClick }) {
-  const texture = useTexture('/src/assets/textures/wall/rock_wall.jpg');
+  const texture = useTexture('/assets/textures/wall/rock_wall.jpg');
   texture.wrapS = texture.wrapT = RepeatWrapping;
   texture.repeat.set(20, 2);
 
@@ -23,3 +23,4 @@ function Waterfall({ onClick }) {
 }
 
 export default Waterfall;
+

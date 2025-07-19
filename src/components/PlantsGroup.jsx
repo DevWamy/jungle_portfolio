@@ -1,5 +1,3 @@
-
-
 import React, { useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
@@ -66,27 +64,27 @@ const links = {
 
 function PlantsGroup() {
   const palms = [
-    useGLTF('assets/models/plants/palms/palm.glb'),
-    useGLTF('assets/models/plants/palms/palm_2.glb'),
-    useGLTF('assets/models/plants/palms/palm_3.glb'),
+    useGLTF('/assets/models/plants/palms/palm.glb'),
+    useGLTF('/assets/models/plants/palms/palm_2.glb'),
+    useGLTF('/assets/models/plants/palms/palm_3.glb'),
   ];
   const monsteras = [
-    useGLTF('assets/models/plants/monsteras/monstera.glb'),
-    useGLTF('assets/models/plants/monsteras/monstera_2.glb'),
-    useGLTF('assets/models/plants/monsteras/monstera_3.glb'),
-    useGLTF('assets/models/plants/monsteras/monstera_4.glb'),
+    useGLTF('/assets/models/plants/monsteras/monstera.glb'),
+    useGLTF('/assets/models/plants/monsteras/monstera_2.glb'),
+    useGLTF('/assets/models/plants/monsteras/monstera_3.glb'),
+    useGLTF('/assets/models/plants/monsteras/monstera_4.glb'),
   ];
   const ferns = [
-    useGLTF('assets/models/plants/ferns/fern.glb'),
-    useGLTF('assets/models/plants/ferns/fern_2.glb'),
-    useGLTF('assets/models/plants/ferns/fern_3.glb'),
-    useGLTF('assets/models/plants/ferns/fern_4.glb'),
-    useGLTF('assets/models/plants/ferns/fern_5.glb'),
-    useGLTF('assets/models/plants/ferns/fern_6.glb'),
+    useGLTF('/assets/models/plants/ferns/fern.glb'),
+    useGLTF('/assets/models/plants/ferns/fern_2.glb'),
+    useGLTF('/assets/models/plants/ferns/fern_3.glb'),
+    useGLTF('/assets/models/plants/ferns/fern_4.glb'),
+    useGLTF('/assets/models/plants/ferns/fern_5.glb'),
+    useGLTF('/assets/models/plants/ferns/fern_6.glb'),
   ];
   const bananas = [
-    useGLTF('assets/models/plants/bananas/banana.glb'),
-    useGLTF('assets/models/plants/bananas/banana_2.glb'),
+    useGLTF('/assets/models/plants/bananas/banana.glb'),
+    useGLTF('/assets/models/plants/bananas/banana_2.glb'),
   ];
 
   const allPlants = [
