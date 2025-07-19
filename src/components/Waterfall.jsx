@@ -23,4 +23,3 @@ function Waterfall({ onClick }) {
 }
 
 export default Waterfall;
-
